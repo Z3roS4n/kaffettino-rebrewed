@@ -6,7 +6,7 @@
   },
   "name": "kaffettino-api",
   "version": "1.0.0",
-  "description": "API server which integrates all functions for Kaffettino Rebrewed, a new version of VivereKaffettino made by Antonio Murabito and Daniele Susino.",
+  "description": "API server which serves all functions of Kaffettino Rebrewed, a new version of VivereKaffettino made by Antonio Murabito and Daniele Susino.",
   "main": "dist/index.js",
   "devDependencies": {},
   "scripts": {
