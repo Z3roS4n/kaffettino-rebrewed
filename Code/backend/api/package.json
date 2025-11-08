@@ -1,9 +1,4 @@
 {
-  "dependencies": {
-    "@fastify/cors": "^11.1.0",
-    "fastify": "^5.6.1",
-    "typescript": "^5.9.3"
-  },
   "name": "kaffettino-api",
   "version": "1.0.0",
   "description": "API server which serves all functions of Kaffettino Rebrewed, a new version of VivereKaffettino made by Antonio Murabito and Daniele Susino.",
@@ -17,5 +12,10 @@
     "kaffettino-api"
   ],
   "author": "murabito.eu",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "fastify": "^5.6.1",
+    "typescript": "^5.9.3"
+  }
 }
