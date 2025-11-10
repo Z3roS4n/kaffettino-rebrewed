@@ -1,48 +1,32 @@
 {
   "compilerOptions": {
-    /* --- Output --- */
+    /* ESM moderno senza estensioni obbligatorie */
+    "module": "ESNext",
     "target": "ES2022",
-    "module": "ESNext", // ✅ ESM moderno
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": false,
+
+    /* Percorsi e build */
     "rootDir": "./src",
     "outDir": "./dist",
-    "moduleResolution": "node",
-    "lib": ["ES2022"],
-
-    /* --- Performance & Clean build --- */
-    "incremental": true,
-    "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo",
-
-    /* --- Type safety avanzata --- */
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* --- Interoperabilità --- */
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "allowJs": false,
-    "types": ["node"],
-
-    /* --- Dev ergonomics --- */
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-
-    /* --- Path aliases --- */
     "baseUrl": "./src",
     "paths": {
-      "@plugins/*": ["plugins/*"],
-      "@routes/*": ["routes/*"],
-      "@utils/*": ["utils/*"],
-      "@types/*": ["types/*"]
-    }
+      "@/*": ["./*"]
+    },
+
+    /* Sicurezza e performance */
+    "strict": true,
+    "skipLibCheck": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    /* Dev UX */
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "sourceMap": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist"]
 }

@@ -4,7 +4,7 @@ import fp from "fastify-plugin";
 
 export const prisma = new PrismaClient();
 
-export default fp(async (fastify) => {
+const prismaPlugin = fp(async (fastify) => {
   fastify.decorate("prisma", prisma);
 
   fastify.addHook("onClose", async (app) => {
@@ -17,3 +17,5 @@ declare module "fastify" {
     prisma: PrismaClient;
   }
 }
+
+export default prismaPlugin;
