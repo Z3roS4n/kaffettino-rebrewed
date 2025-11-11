@@ -1,0 +1,10 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "RFID-RC522")(type "KiCad")(uri "${KIPRJMOD}/libs/RFID-RC522")(options "")(descr ""))
+  (lib (name "SSD1306")(type "KiCad")(uri "${KIPRJMOD}/libs/SSD1306 128x64/SSD1306.pretty")(options "")(descr ""))
+  (lib (name "ESP32-38Pin")(type "KiCad")(uri "${KIPRJMOD}/libs/ESP32 38 Pin")(options "")(descr ""))
+  (lib (name "DFR0299")(type "KiCad")(uri "${KIPRJMOD}/libs/DFR0299")(options "")(descr ""))
+  (lib (name "PPTC101LFBN_RC")(type "KiCad")(uri "${KIPRJMOD}/libs/PPTC101LFBN_RC")(options "")(descr ""))
+  (lib (name "OSTVN02A150")(type "KiCad")(uri "${KIPRJMOD}/libs/OSTVN02A150")(options "")(descr ""))
+  (lib (name "PCF8574AN")(type "KiCad")(uri "${KIPRJMOD}/libs/PCF8574AN")(options "")(descr ""))
+)
