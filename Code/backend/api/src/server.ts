@@ -2,6 +2,7 @@ import Fastify from "fastify";
 
 import prismaPlugin from "./plugins/prisma.js";
 import fastifyCors from "@fastify/cors";
+import authPlugin from "./plugins/auth.js";
 import autoload from "@fastify/autoload";
 import path, { join, dirname } from "path";
 import fs from "fs";
@@ -16,6 +17,7 @@ const fastify = Fastify();
 
 async function buildServer() {
   fastify.register(prismaPlugin);
+  fastify.register(authPlugin);
   const routesPath = join(__dirname, "routes");
   fs.readdirSync(routesPath, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())

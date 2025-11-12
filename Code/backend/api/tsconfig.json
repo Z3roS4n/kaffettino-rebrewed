@@ -4,9 +4,8 @@
     "module": "ESNext",
     "target": "ES2022",
     "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": true,
-    "declaration": true,
+    "allowImportingTsExtensions": false,
+    "emitDeclarationOnly": false,
 
     /* Percorsi e build */
     "rootDir": "./src",
@@ -29,6 +28,6 @@
     "isolatedModules": true,
     "sourceMap": true
   },
-  "include": ["src"],
+  "include": ["src/**/*", "src/generated"],
   "exclude": ["node_modules", "dist"]
 }
