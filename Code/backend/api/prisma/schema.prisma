@@ -13,3 +13,209 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  userData      UserData[]
+  cards         Card[]
+  wallets       Wallet[]
+  topUps        TopUp[]
+  transactions  Transaction[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String   @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model UserData {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aulettaId Int?
+  auletta   Auletta?  @relation(fields: [aulettaId], references: [id], onDelete: SetNull)
+  birthDate DateTime?
+  role      Role     @default(GUEST)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("user_data")
+}
+
+model TopUp {
+  id        String   @id @default(uuid())
+  amount    Float
+  walletId  String
+  wallet    Wallet   @relation(fields: [walletId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  aulettaId Int
+  auletta   Auletta  @relation(fields: [aulettaId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("top_up")
+}
+
+model Transaction {
+  id          Int   @id @default(autoincrement())
+  inventoryId Int
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
+  quantity    Int
+  totalPrice  Float
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  aulettaId   Int
+  auletta     Auletta  @relation(fields: [aulettaId], references: [id], onDelete: SetNull)
+  walletId    String
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: SetNull)
+  cardId      String?
+  card        Card?    @relation(fields: [cardId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([inventoryId])
+
+  @@map("transaction")
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  balance   Float    @default(0)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aulettaId Int
+  auletta   Auletta  @relation(fields: [aulettaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  topUps    TopUp[]
+  transactions Transaction[]
+
+  @@map("wallet")
+}
+
+model Card {
+  id        String   @id @default(uuid())
+  cardId    String   @unique
+  pin       Int?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  transactions Transaction[]
+
+  @@map("card")
+}
+
+model Product {
+  id        Int   @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  inventories Inventory[]
+
+  @@map("product")
+}
+
+model Inventory {
+  id        Int   @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  aulettaId Int
+  auletta   Auletta  @relation(fields: [aulettaId], references: [id], onDelete: Cascade)
+  quantity  Int
+  marginPrice Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  transactions Transaction[]
+
+  @@unique([productId, aulettaId])
+  @@map("inventory")
+}
+
+model Auletta {
+  id        Int   @id @default(autoincrement())
+  name      String
+  location  String
+  number    String
+  telegramId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  userData  UserData[]
+  wallets   Wallet[]
+  inventories Inventory[]
+  topUps    TopUp[]
+  transactions Transaction[]
+
+
+  @@unique([name])
+  @@unique([number])
+  @@map("auletta")
+}
+
+enum Role {
+  GUEST
+  USER
+  ADMIN
+  TREASURER
+  SUPERUSER
+}
