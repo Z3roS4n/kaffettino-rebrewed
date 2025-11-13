@@ -7,4 +7,5 @@
   (lib (name "PPTC101LFBN_RC")(type "KiCad")(uri "${KIPRJMOD}/libs/PPTC101LFBN_RC")(options "")(descr ""))
   (lib (name "OSTVN02A150")(type "KiCad")(uri "${KIPRJMOD}/libs/OSTVN02A150")(options "")(descr ""))
   (lib (name "PCF8574AN")(type "KiCad")(uri "${KIPRJMOD}/libs/PCF8574AN")(options "")(descr ""))
+  (lib (name "OSTVN04A150")(type "KiCad")(uri "${KIPRJMOD}/libs/OSTVN04A150")(options "")(descr ""))
 )
