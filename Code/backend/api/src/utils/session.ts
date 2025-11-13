@@ -1,6 +1,6 @@
 // src/utils/session.ts
 import { fromNodeHeaders } from "better-auth/node";
-import { auth } from "../auth.js";
+import auth from "../auth.js";
 
 export async function getSession(request: any) {
   return auth.api.getSession({

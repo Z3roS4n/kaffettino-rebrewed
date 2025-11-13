@@ -1,34 +1,67 @@
 import Fastify from "fastify";
-
-import prismaPlugin from "./plugins/prisma.js";
-import fastifyCors from "@fastify/cors";
-import authPlugin from "./plugins/auth.js";
 import autoload from "@fastify/autoload";
-import path, { join, dirname } from "path";
-import fs from "fs";
-
-import { fileURLToPath } from "url";
-
-// Ottieni il path della cartella corrente (equivalente a __dirname)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import path from "path";
+import fastifyCors from "@fastify/cors";
 
 const fastify = Fastify();
+const API_PREFIX = "/api";
 
 async function buildServer() {
-  fastify.register(prismaPlugin);
-  fastify.register(authPlugin);
-  const routesPath = join(__dirname, "routes");
-  fs.readdirSync(routesPath, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .forEach((folder) => {
-      const prefix = `/${folder.name}`;
-      console.log("Route caricata: ", prefix);
-      fastify.register(autoload, {
-        dir: join(routesPath, folder.name),
-        options: { prefix }, // aggiunge il prefisso alle rotte della cartella
-      });
-    });
+  await fastify.register(autoload, {
+    dir: path.join(import.meta.dirname, "plugins"),
+    dirNameRoutePrefix: false,
+  });
+
+  await fastify.register(autoload, {
+    dir: path.join(import.meta.dirname, "routes"),
+    autoHooks: true,
+    autoHooksPattern: /\.hook(?:\.ts|\.js|\.cjs|\.mjs)$/i,
+    cascadeHooks: true,
+  });
+
+  fastify.setErrorHandler((err, request, reply) => {
+    fastify.log.error(
+      {
+        err,
+        request: {
+          method: request.method,
+          url: request.url,
+          query: request.query,
+          params: request.params,
+        },
+      },
+      "Unhandled error occurred"
+    );
+
+    reply.code(err.statusCode ?? 500);
+
+    let message = "Internal fastify Error";
+    if (err.statusCode && err.statusCode < 500) {
+      message = err.message;
+    }
+
+    return { message };
+  });
+
+  fastify.setNotFoundHandler((request, reply) => {
+    request.log.warn(
+      {
+        request: {
+          method: request.method,
+          url: request.url,
+          query: request.query,
+          params: request.params,
+        },
+      },
+      "Resource not found"
+    );
+
+    reply.code(404);
+
+    return { message: "Not Found" };
+  });
+
+  fastify.ready().then(() => console.log(fastify.printRoutes()));
 
   return fastify;
 }
@@ -41,7 +74,7 @@ async function start() {
     const address = fastify.server.address();
     const port = typeof address === "object" && address ? address.port : 3000;
 
-    console.log(`🚀 Server running on http://localhost:${port}`);
+    console.log(`🚀 fastify running on http://localhost:${port}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

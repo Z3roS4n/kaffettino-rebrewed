@@ -1,12 +1,15 @@
-import { betterAuth } from "better-auth";
+import { betterAuth, getEnvVar } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./plugins/prisma.js";
 
-// Configurazione BetterAuth
-export const auth = betterAuth({
+const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
-  trustedOrigins: ["http://localhost:3000", "https://example.com"],
-  emailAndPassword: {
-    enabled: true,
-  },
+  trustedOrigins: ["http://localhost:3000"],
+  emailAndPassword: { enabled: true },
+  baseURL: "http://localhost:3000",
 });
+
+export type User = typeof auth.$Infer.Session.user;
+export type Session = typeof auth.$Infer.Session;
+
+export default auth;
