@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DB_URL")
 }
 
 model User {
@@ -97,6 +97,7 @@ model UserData {
 model TopUp {
   id        String   @id @default(uuid())
   amount    Float
+  description String?
   walletId  String
   wallet    Wallet   @relation(fields: [walletId], references: [id], onDelete: SetNull)
   userId    String
@@ -115,6 +116,8 @@ model Transaction {
   inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
   quantity    Int
   totalPrice  Float
+  description String?
+  discount    Float   @default(0)
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: SetNull)
   aulettaId   Int
@@ -149,6 +152,26 @@ model Wallet {
   @@map("wallet")
 }
 
+model Auletta {
+  id        Int   @id @default(autoincrement())
+  name      String
+  location  String
+  number    String
+  telegramId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  userData  UserData[]
+  wallets   Wallet[]
+  inventories Inventory[]
+  topUps    TopUp[]
+  transactions Transaction[]
+
+  @@unique([name])
+  @@unique([number])
+  @@map("auletta")
+}
+
 model Card {
   id        String   @id @default(uuid())
   cardId    String   @unique
@@ -169,15 +192,23 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  inventories Inventory[]
+  inventories Product_Inventory[]
 
   @@map("product")
 }
 
+model Product_Inventory {
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  inventoryId Int
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, inventoryId])
+  @@map("product_inventory")
+}
+
 model Inventory {
   id        Int   @id @default(autoincrement())
-  productId Int
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   aulettaId Int
   auletta   Auletta  @relation(fields: [aulettaId], references: [id], onDelete: Cascade)
   quantity  Int
@@ -186,30 +217,9 @@ model Inventory {
   updatedAt DateTime @default(now()) @updatedAt
 
   transactions Transaction[]
+  products   Product_Inventory[]
 
-  @@unique([productId, aulettaId])
   @@map("inventory")
-}
-
-model Auletta {
-  id        Int   @id @default(autoincrement())
-  name      String
-  location  String
-  number    String
-  telegramId String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  userData  UserData[]
-  wallets   Wallet[]
-  inventories Inventory[]
-  topUps    TopUp[]
-  transactions Transaction[]
-
-
-  @@unique([name])
-  @@unique([number])
-  @@map("auletta")
 }
 
 enum Role {
