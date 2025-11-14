@@ -1,4 +1,4 @@
-import { User, Wallet } from "../generated/prisma/client.js";
+import { User, Wallet, Role } from "../generated/prisma/client.js";
 import { prisma } from "../plugins/prisma.js";
 import { LogMethod } from "./decorators/logmethod.js";
 
@@ -6,8 +6,10 @@ export interface IGetUser extends User {
   wallets?: Wallet[];
 }
 
-interface ISetUserData {
-  aulettaId: number;
+export interface ISetUserData {
+  aulettaId?: number;
+  role?: string;
+  birthDate?: Date;
 }
 
 class UserHandler {
@@ -43,7 +45,34 @@ class UserHandler {
   }
 
   @LogMethod
-  async setUserData(userId: string, userData: ISetUserData) {}
+  /**
+   * Updates the specified user's data with the provided fields.
+   *
+   * Only the fields present in `userData` will be updated. If no updatable fields are provided,
+   * an error is thrown.
+   *
+   * @param userId - The unique identifier of the user to update.
+   * @param userData - An object containing the user data fields to update. Supported fields include `aulettaId`, `role`, and `birthDate`.
+   * @returns A promise that resolves to the updated `User` object.
+   * @throws {Error} If no user data is provided to update.
+   */
+  async setUserData(userId: string, userData: ISetUserData): Promise<User> {
+    const data: any = {};
+
+    if (userData.aulettaId) data.aulettaId = userData.aulettaId;
+    if (userData.role) data.role = userData.role as Role;
+    if (userData.birthDate) data.birthDate = userData.birthDate;
+    if (Object.keys(data).length === 0)
+      throw new Error("No user data provided to update");
+
+    const setData = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data,
+    });
+    return setData;
+  }
 }
 
 const userHandler = new UserHandler();

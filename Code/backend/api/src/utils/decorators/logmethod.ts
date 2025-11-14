@@ -1,3 +1,14 @@
+/**
+ * Method decorator that logs the invocation and result of the decorated method.
+ *
+ * Logs the class and method name, input arguments, and the returned value.
+ * If the method throws an error, it logs the error as well.
+ *
+ * @param target - The prototype of the class.
+ * @param propertyKey - The name of the method being decorated.
+ * @param descriptor - The property descriptor for the method.
+ * @returns The modified property descriptor with logging functionality.
+ */
 export function LogMethod(
   target: any,
   propertyKey: string,
