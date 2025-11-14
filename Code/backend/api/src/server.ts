@@ -3,7 +3,9 @@ import autoload from "@fastify/autoload";
 import path from "path";
 import fastifyCors from "@fastify/cors";
 
-const fastify = Fastify();
+const fastify = Fastify({
+  logger: true,
+});
 const API_PREFIX = "/api";
 
 async function buildServer() {
@@ -76,6 +78,7 @@ async function start() {
 
     console.log(`🚀 fastify running on http://localhost:${port}`);
   } catch (err) {
+    console.log(err);
     fastify.log.error(err);
     process.exit(1);
   }

@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
@@ -20,12 +20,15 @@ model User {
   email         String
   emailVerified Boolean   @default(false)
   image         String?
+  aulettaId Int?
+  auletta   Auletta?  @relation(fields: [aulettaId], references: [id], onDelete: SetNull)
+  birthDate DateTime?
+  role      Role     @default(GUEST)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
+  
   sessions      Session[]
   accounts      Account[]
-
-  userData      UserData[]
   cards         Card[]
   wallets       Wallet[]
   topUps        TopUp[]
@@ -78,20 +81,6 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
-}
-
-model UserData {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  aulettaId Int?
-  auletta   Auletta?  @relation(fields: [aulettaId], references: [id], onDelete: SetNull)
-  birthDate DateTime?
-  role      Role     @default(GUEST)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  @@map("user_data")
 }
 
 model TopUp {
@@ -161,7 +150,7 @@ model Auletta {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  userData  UserData[]
+  user      User[]
   wallets   Wallet[]
   inventories Inventory[]
   topUps    TopUp[]

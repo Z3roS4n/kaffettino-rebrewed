@@ -3,9 +3,11 @@
     /* ESM moderno senza estensioni obbligatorie */
     "module": "ESNext",
     "target": "ES2022",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": false,
     "emitDeclarationOnly": false,
+    "experimentalDecorators": true,
+    "allowJs": true,
 
     /* Percorsi e build */
     "rootDir": "./src",
