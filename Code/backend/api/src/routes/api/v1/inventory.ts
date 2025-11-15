@@ -5,8 +5,8 @@ import userHandler, {
   ISetUserData,
 } from "../../../utils/user-handler.js";
 import sendError from "../../../utils/error-handler.js";
-import sessionMW from "@/middlewares/session.js";
-import permissionsMW from "@/middlewares/permissions.js";
+import sessionMW from "../../../middlewares/session.js";
+import permissionsMW from "../../../middlewares/permissions.js";
 import { Role } from "../../../generated/prisma/client.js";
 
 const BASE_PATH = "/inventory";

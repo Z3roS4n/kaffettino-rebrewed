@@ -1,1 +1,35 @@
 GET http://localhost:3000/api/v1/user?includeWallets=true
+Authorization: Bearer mDrIPxNeGNj9WDqsJ6FcMPQBM8DHTNWT
+
+PUT http://localhost:3000/api/v1/user/role
+Content-Type: application/json
+Authorization: Bearer mDrIPxNeGNj9WDqsJ6FcMPQBM8DHTNWT
+
+{
+  "targetUserId": "UyXyJopt3qmnBC6bA0V6OpKo4Dvxm9KZ",
+  "role": "ADMIN"
+}
+
+  "birthDate": "2025-01-05T00:00:00.000Z"
+
+POST http://localhost:3000/api/auth/sign-up/email
+Content-Type: application/json
+
+{
+  "name": "antoniocirino.murabito",
+  "email":"antoniomurabito4@gmail.com",
+  "password":"00-123-00aB6"
+}
+
+{
+  "token": "mDrIPxNeGNj9WDqsJ6FcMPQBM8DHTNWT",
+  "user": {
+    "id": "UyXyJopt3qmnBC6bA0V6OpKo4Dvxm9KZ",
+    "email": "antoniomurabito4@gmail.com",
+    "name": "antoniocirino.murabito",
+    "image": null,
+    "emailVerified": false,
+    "createdAt": "2025-11-15T22:12:45.402Z",
+    "updatedAt": "2025-11-15T22:12:45.402Z"
+  }
+}

@@ -8,8 +8,13 @@ export interface IGetUser extends User {
 
 export interface ISetUserData {
   aulettaId?: number;
-  role?: string;
   birthDate?: Date;
+}
+
+export interface ISetUserRole {
+  targetUserId?: string;
+  role?: Role;
+  requestRole?: Role;
 }
 
 class UserHandler {
@@ -34,7 +39,7 @@ class UserHandler {
         id: userId,
       },
       include: {
-        wallets: includeWallets ?? false,
+        wallets: Boolean(includeWallets) ?? false,
       },
     });
     if (!user) {
@@ -52,7 +57,7 @@ class UserHandler {
    * an error is thrown.
    *
    * @param userId - The unique identifier of the user to update.
-   * @param userData - An object containing the user data fields to update. Supported fields include `aulettaId`, `role`, and `birthDate`.
+   * @param userData - An object containing the user data fields to update. Supported fields include `aulettaId` and `birthDate`.
    * @returns A promise that resolves to the updated `User` object.
    * @throws {Error} If no user data is provided to update.
    */
@@ -60,7 +65,6 @@ class UserHandler {
     const data: any = {};
 
     if (userData.aulettaId) data.aulettaId = userData.aulettaId;
-    if (userData.role) data.role = userData.role as Role;
     if (userData.birthDate) data.birthDate = userData.birthDate;
     if (Object.keys(data).length === 0)
       throw new Error("No user data provided to update");
@@ -72,6 +76,27 @@ class UserHandler {
       data,
     });
     return setData;
+  }
+
+  /**
+   * Updates the role of a user with the specified user ID.
+   *
+   * @param userId - The unique identifier of the user whose role is to be updated.
+   * @param role - The new role to assign to the user.
+   * @returns A promise that resolves to the updated User object.
+   * @throws If the user with the given ID does not exist or the update fails.
+   */
+  async setUserRole(targetUserId: string, role: Role): Promise<User> {
+    const setRole = await prisma.user.update({
+      where: {
+        id: targetUserId,
+      },
+      data: {
+        role: role,
+      },
+    });
+
+    return setRole;
   }
 }
 

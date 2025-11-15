@@ -1,13 +1,17 @@
 import type { FastifyInstance } from "fastify";
-import { getSession } from "../../../utils/session.js";
 import userHandler, {
   IGetUser,
   ISetUserData,
+  ISetUserRole,
 } from "../../../utils/user-handler.js";
 import sendError from "../../../utils/error-handler.js";
 import sessionMW from "../../../middlewares/session.js";
+import permissionsMW from "../../../middlewares/permissions.js";
+import { Role } from "../../../generated/prisma/client.js";
+import permissionsHandler from "../../../utils/permissions-handler.js";
 
 const BASE_PATH = "/user";
+const ROLES_NEEDED = [Role.ADMIN];
 
 export default async function userRoutes(fastify: FastifyInstance) {
   fastify.get(
@@ -32,7 +36,10 @@ export default async function userRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post(
+  // PUT https://localhost:3000/api/v1/user
+  // Content-Type: application/json
+  // { birthDate: "2025-01-05T00:00:00.000Z", aulettaId: 19283232 }
+  fastify.put(
     `${BASE_PATH}`,
     { preHandler: sessionMW },
     async (request, reply) => {
@@ -43,6 +50,51 @@ export default async function userRoutes(fastify: FastifyInstance) {
         const updateUser = await userHandler.setUserData(session.user.id, body);
 
         return updateUser;
+      } catch (error) {
+        return sendError(reply, { code: 500, error: error });
+      }
+    }
+  );
+
+  // PUT https://localhost:3000/api/v1/user
+  // Content-Type: application/json
+  // { role: "ADMIN" } (Accepted: Enum of Role)
+  // Roles needed: ADMIN, SUPERUSER
+  fastify.put(
+    `${BASE_PATH}/role`,
+    {
+      preHandler: [sessionMW, permissionsMW(ROLES_NEEDED)],
+    },
+    async (request, reply) => {
+      try {
+        const body: ISetUserRole = request.body as ISetUserRole;
+
+        if (!body.role || !body.targetUserId)
+          return sendError(reply, {
+            code: 400,
+            message: "Required param 'role' or 'targetUserId' is missing!",
+          });
+
+        /**
+         * ROLE HIERARCHY VERIFICATION
+         */
+        const roleChangeVerification = permissionsHandler.verifyRoleChange(
+          request.session,
+          body.targetUserId,
+          body.role
+        );
+        if (!roleChangeVerification.success)
+          return sendError(reply, {
+            code: 403,
+            message: roleChangeVerification.message,
+          });
+
+        const setRole = await userHandler.setUserRole(
+          request.session.user.id,
+          body.role
+        );
+
+        return setRole;
       } catch (error) {
         return sendError(reply, { code: 500, error: error });
       }
