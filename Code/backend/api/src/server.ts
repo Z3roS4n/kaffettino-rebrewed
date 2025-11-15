@@ -1,16 +1,19 @@
 import Fastify from "fastify";
 import autoload from "@fastify/autoload";
 import path from "path";
-import fastifyCors from "@fastify/cors";
 
 const fastify = Fastify({
   logger: true,
 });
-const API_PREFIX = "/api";
 
 async function buildServer() {
   await fastify.register(autoload, {
     dir: path.join(import.meta.dirname, "plugins"),
+    dirNameRoutePrefix: false,
+  });
+
+  await fastify.register(autoload, {
+    dir: path.join(import.meta.dirname, "decorators"),
     dirNameRoutePrefix: false,
   });
 
@@ -63,7 +66,10 @@ async function buildServer() {
     return { message: "Not Found" };
   });
 
-  fastify.ready().then(() => console.log(fastify.printRoutes()));
+  fastify.ready().then(() => {
+    console.log(fastify.printPlugins());
+    console.log(fastify.printRoutes());
+  });
 
   return fastify;
 }

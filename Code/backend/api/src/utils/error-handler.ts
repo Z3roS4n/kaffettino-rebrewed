@@ -1,4 +1,4 @@
-import fastify from "fastify";
+import fastify, { FastifyReply } from "fastify";
 
 interface IError {
   code: number;
@@ -22,15 +22,19 @@ export const errorCodes: Record<number, string> = {
 };
 
 /**
- * Constructs and returns a standardized error object based on the provided parameters.
+ * Sends a standardized error response using Fastify's reply interface.
  *
- * @param {IError} params - The error details.
- * @param {number} params.code - The error code representing the type of error.
- * @param {string} [params.error] - An optional error string describing the error.
- * @param {string} [params.message] - An optional custom error message. If not provided, a default message from `errorCodes` is used based on the code.
- * @returns {IError} The constructed error object containing the code, error, and message.
+ * @param reply - The Fastify reply instance used to send the response.
+ * @param param1 - An object containing error details.
+ * @param param1.code - The error code to be sent in the response.
+ * @param param1.error - The error object or message to be logged and included in the response.
+ * @param param1.message - An optional custom error message to be sent in the response.
+ * @returns The Fastify reply instance with the error object sent.
  */
-export default function sendError({ code, error, message }: IError): IError {
+export default function sendError(
+  reply: FastifyReply,
+  { code, error, message }: IError
+): FastifyReply {
   const errorMessage = error instanceof Error ? error.message : String(error);
   const errorObject: IError = {
     code: code,
@@ -40,5 +44,5 @@ export default function sendError({ code, error, message }: IError): IError {
   if (message) errorObject.message = message;
   else errorObject.message = errorCodes[code];
 
-  return errorObject;
+  return reply.send(errorObject);
 }
